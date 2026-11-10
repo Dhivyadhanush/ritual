@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#060a0c" />
+    <meta name="robots" content="noindex" />
+    <title>Sign in · Ritual</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%BF%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #060a0c;
+        --text: #ecfdf5;
+        --muted: #8aa39b;
+        --faint: #5a6f69;
+        --accent: #6ee7b7;
+        --accent-2: #38bdf8;
+        --border: rgba(255, 255, 255, 0.09);
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        font-family: ui-sans-serif, -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--text);
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .ambient {
+        position: fixed;
+        inset: -25% -10%;
+        background:
+          radial-gradient(40% 50% at 22% 24%, rgba(52, 211, 153, 0.16), transparent 70%),
+          radial-gradient(38% 48% at 78% 16%, rgba(56, 189, 248, 0.13), transparent 72%),
+          radial-gradient(30% 40% at 50% 80%, rgba(251, 191, 36, 0.05), transparent 70%);
+        filter: blur(22px);
+        pointer-events: none;
+        animation: drift 20s ease-in-out infinite alternate;
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        width: min(398px, calc(100vw - 32px));
+        padding: 32px 30px 26px;
+        border-radius: 22px;
+        border: 1px solid var(--border);
+        background:
+          radial-gradient(130% 120% at 100% 0%, rgba(110, 231, 183, 0.08), transparent 60%),
+          rgba(13, 22, 25, 0.86);
+        box-shadow: 0 30px 90px -34px rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        animation: rise 0.65s var(--ease) both;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+      }
+
+      .mark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        font-size: 23px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(145deg, rgba(110, 231, 183, 0.16), rgba(56, 189, 248, 0.1));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 680;
+        letter-spacing: -0.02em;
+      }
+
+      .brand p {
+        margin: 3px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      h2 {
+        margin: 30px 0 0;
+        font-size: 25px;
+        letter-spacing: -0.025em;
+        font-weight: 650;
+      }
+
+      .sub {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 24px;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 13px;
+        border-radius: 11px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text);
+        font: inherit;
+        font-size: 14px;
+        transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: rgba(110, 231, 183, 0.5);
+        box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.09);
+        background: rgba(0, 0, 0, 0.42);
+      }
+
+      .pw-wrap {
+        position: relative;
+        display: block;
+      }
+
+      .pw-wrap input {
+        padding-right: 62px;
+      }
+
+      .toggle {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0;
+        padding: 5px 9px;
+        border: 1px solid transparent;
+        border-radius: 7px;
+        background: transparent;
+        color: var(--faint);
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .toggle:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        box-shadow: none;
+        transform: translateY(-50%);
+      }
+
+      button {
+        margin-top: 4px;
+        padding: 12px 16px;
+        border-radius: 11px;
+        border: 1px solid rgba(110, 231, 183, 0.4);
+        background: linear-gradient(145deg, rgba(110, 231, 183, 0.24), rgba(56, 189, 248, 0.18));
+        color: #eafff7;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s var(--ease), background 0.25s, box-shadow 0.25s;
+      }
+
+      button:hover {
+        background: linear-gradient(145deg, rgba(110, 231, 183, 0.34), rgba(56, 189, 248, 0.24));
+        box-shadow: 0 12px 34px -18px rgba(110, 231, 183, 0.9);
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: scale(0.985);
+      }
+
+      button:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 1px rgba(110, 231, 183, 0.45), 0 0 0 5px rgba(110, 231, 183, 0.1);
+      }
+
+      .error {
+        display: none;
+        margin-top: 16px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(251, 113, 133, 0.35);
+        background: rgba(251, 113, 133, 0.09);
+        color: #fecdd3;
+        font-size: 12.5px;
+        line-height: 1.45;
+        animation: fade 0.3s var(--ease);
+      }
+
+      .error.show {
+        display: block;
+      }
+
+      .foot {
+        margin: 22px 0 0;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        text-align: center;
+        font-size: 11px;
+        color: var(--faint);
+        letter-spacing: 0.02em;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px) scale(0.99);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @keyframes drift {
+        from {
+          transform: translate3d(-1.5%, -1%, 0) scale(1);
+        }
+        to {
+          transform: translate3d(1.5%, 1.5%, 0) scale(1.05);
+        }
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .card {
+          padding: 26px 22px 22px;
+        }
+        h2 {
+          font-size: 22px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true"></div>
+
+    <main class="card">
+      <div class="brand">
+        <div class="mark">🌿</div>
+        <div>
+          <h1>Ritual</h1>
+          <p>Health reminders</p>
+        </div>
+      </div>
+
+      <h2>Sign in</h2>
+      <p class="sub">This dashboard is private. One account, no sign-up.</p>
+
+      <div id="error" class="error" role="alert"></div>
+
+      <form method="POST" action="/login">
+        <input type="hidden" name="next" id="next" value="/" />
+        <label>
+          Username
+          <input
+            id="username"
+            name="username"
+            value="{{USERNAME}}"
+            autocomplete="username"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            required
+            autofocus
+          />
+        </label>
+        <label>
+          Password
+          <span class="pw-wrap">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              autocapitalize="none"
+              autocorrect="off"
+              spellcheck="false"
+              required
+            />
+            <button type="button" id="togglePassword" class="toggle" aria-label="Show password">
+              Show
+            </button>
+          </span>
+        </label>
+        <button type="submit">Sign in</button>
+      </form>
+
+      <p class="foot">Single-user login · no sign-up</p>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const next = params.get('next');
+      if (next && next.startsWith('/') && !next.startsWith('//')) {
+        document.getElementById('next').value = next;
+      }
+      const err = params.get('error');
+      if (err) {
+        const box = document.getElementById('error');
+        box.textContent =
+          err === 'rate'
+            ? 'Too many attempts. Try again in a few minutes.'
+            : 'Wrong username or password.';
+        box.classList.add('show');
+        document.getElementById('password').focus();
+      }
+
+      const toggle = document.getElementById('togglePassword');
+      toggle.addEventListener('click', () => {
+        const input = document.getElementById('password');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        toggle.textContent = show ? 'Hide' : 'Show';
+        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    </script>
+  </body>
+</html>

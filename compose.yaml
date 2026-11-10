@@ -1,0 +1,27 @@
+services:
+  ritual:
+    build: .
+    container_name: ritual
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+    ports:
+      - "${PORT:-4322}:4322"
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ:-Asia/Kolkata}
+      HOST: 0.0.0.0
+    volumes:
+      - ./data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4322/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#060a0c" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Ritual · health reminders</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true"></div>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">🌿</div>
+          <div>
+            <h1>Ritual <span>· health reminders</span></h1>
+            <p>Hydration, movement and honest daily check-ins — pushed to your wrist.</p>
+          </div>
+        </div>
+        <div class="topbar-status">
+          <span id="modePill" class="pill pill-idle"><i></i> Connecting…</span>
+          <span id="nextText" class="clock">—</span>
+          <form id="logoutForm" class="logout-form" method="POST" action="/logout" hidden>
+            <button class="btn btn-ghost" type="submit">Log out</button>
+          </form>
+        </div>
+      </header>
+
+      <section id="pending" class="pending hidden" aria-live="polite"></section>
+
+      <main class="grid">
+        <section class="card card-motivation">
+          <div class="card-head">
+            <h2>Today’s intention</h2>
+            <span id="dateLabel" class="micro">—</span>
+          </div>
+          <blockquote id="quote">—</blockquote>
+          <p id="focus" class="focus">—</p>
+          <div id="weatherChip" class="chip-row"></div>
+        </section>
+
+        <section class="card card-water">
+          <div class="card-head">
+            <h2>Water</h2>
+            <span id="waterPct" class="micro">0%</span>
+          </div>
+          <div class="water-body">
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 140 140" aria-hidden="true">
+                <defs>
+                  <linearGradient id="waterGradient" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#6ee7b7" />
+                    <stop offset="100%" stop-color="#38bdf8" />
+                  </linearGradient>
+                </defs>
+                <circle class="ring-track" cx="70" cy="70" r="56" />
+                <circle id="ringFill" class="ring-fill" cx="70" cy="70" r="56" />
+              </svg>
+              <div class="ring-label"><strong id="ringCount">0</strong><span id="ringGoal">/ 8</span></div>
+            </div>
+            <div class="water-copy">
+              <div id="waterMl" class="micro">0 ml of 2000 ml</div>
+              <div class="water-actions">
+                <button class="btn btn-ghost" data-water="-1" aria-label="Remove one glass">−</button>
+                <button class="btn btn-primary" data-water="1">+ 1 glass</button>
+              </div>
+            </div>
+          </div>
+          <div id="glasses" class="glasses" aria-label="Glasses today"></div>
+        </section>
+
+        <section class="card card-streak">
+          <div class="card-head">
+            <h2>Streak</h2>
+            <span id="best" class="micro">best 0</span>
+          </div>
+          <div class="streak-num"><span id="streak">0</span><small>days</small></div>
+          <p class="micro">A day counts when water is done and half the habits are ticked.</p>
+          <div id="bars" class="bars"></div>
+          <div id="avg" class="micro">—</div>
+        </section>
+
+        <section class="card card-watch">
+          <div class="card-head">
+            <h2>Watch</h2>
+            <span id="watchWhen" class="micro">no data</span>
+          </div>
+          <div id="watchBody" class="watch-body"></div>
+        </section>
+
+        <section class="card card-habits">
+          <div class="card-head">
+            <h2>Today</h2>
+            <span id="habitCount" class="micro">0/0</span>
+          </div>
+          <div id="habitList" class="habit-list"></div>
+        </section>
+
+        <section class="card card-upnext">
+          <div class="card-head">
+            <h2>Up next</h2>
+            <span class="micro">today</span>
+          </div>
+          <div id="upnext" class="upnext"></div>
+          <button class="btn btn-ghost wide" id="checkNow">Run a check now</button>
+        </section>
+
+        <section class="card card-month">
+          <div class="card-head">
+            <h2>Monthly check-ins</h2>
+            <div class="month-nav">
+              <button class="btn btn-ghost" id="prevMonth" aria-label="Previous month">←</button>
+              <span id="monthLabel">—</span>
+              <button class="btn btn-ghost" id="nextMonth" aria-label="Next month">→</button>
+            </div>
+          </div>
+          <p class="micro month-help">
+            Every column is a day. Click a day to tick or untick it. <b>✓</b> done · <b>·</b> answered no · blank = not answered.
+          </p>
+          <div class="month-scroll"><div id="monthGrid"></div></div>
+        </section>
+
+        <details class="card card-settings" id="settingsCard">
+          <summary>
+            <h2>Settings</h2>
+            <span class="micro">ntfy, schedule, habits</span>
+          </summary>
+
+          <form id="settingsForm" autocomplete="off">
+            <div class="form-grid">
+              <label>Your name<input name="name" maxlength="40" /></label>
+              <label>ntfy topic<input name="topic" placeholder="my-health-7f3a" maxlength="64" /></label>
+              <label>ntfy server<input name="server" placeholder="https://ntfy.sh" /></label>
+              <label>ntfy token<input name="token" type="password" placeholder="unchanged" /></label>
+              <label class="span-2">
+                Dashboard URL for notification buttons
+                <input name="baseUrl" placeholder="http://your-host:4322" />
+                <span class="hint">Set this to your Mac’s LAN address so “+1 glass” and check-in buttons work from the phone.</span>
+              </label>
+              <label class="check"><input type="checkbox" name="dryRun" /> Dry run — log only, send nothing</label>
+              <label>Minimum priority<select name="minPriority">
+                <option value="0">Per-alert</option>
+                <option value="2">Low</option>
+                <option value="3">Normal</option>
+                <option value="4">High</option>
+                <option value="5">Urgent</option>
+              </select></label>
+            </div>
+
+            <h3>Day window</h3>
+            <div class="form-grid">
+              <label>Wake<input name="wake" type="time" /></label>
+              <label>Sleep<input name="sleep" type="time" /></label>
+              <label>Morning motivation<input name="motivationTime" type="time" /></label>
+              <label>Evening recap<input name="recapTime" type="time" /></label>
+              <label class="check"><input type="checkbox" name="motivationEnabled" /> Motivation on</label>
+              <label class="check"><input type="checkbox" name="recapEnabled" /> Recap on</label>
+            </div>
+
+            <h3>Water</h3>
+            <div class="form-grid">
+              <label class="check"><input type="checkbox" name="waterEnabled" /> Enabled</label>
+              <label>Glasses per day<input name="waterGoal" type="number" min="1" max="30" /></label>
+              <label>Glass size (ml)<input name="glassMl" type="number" min="100" max="1000" step="50" /></label>
+              <label>Nudge every (min)<input name="waterInterval" type="number" min="10" max="360" step="5" /></label>
+              <label>Start<input name="waterStart" type="time" /></label>
+              <label>End<input name="waterEnd" type="time" /></label>
+            </div>
+
+            <h3>Movement</h3>
+            <div class="form-grid">
+              <label class="check"><input type="checkbox" name="moveEnabled" /> Enabled</label>
+              <label>Nudge every (min)<input name="moveInterval" type="number" min="10" max="360" step="5" /></label>
+              <label>Start<input name="moveStart" type="time" /></label>
+              <label>End<input name="moveEnd" type="time" /></label>
+              <label>Step goal<input name="stepGoal" type="number" min="1000" max="50000" step="500" /></label>
+            </div>
+
+            <h3>Habits &amp; check-ins</h3>
+            <p class="hint">“Check-in” habits ask a yes/no question and tick the monthly grid. “Nudge” habits are simple reminders.</p>
+            <div id="habitEditor" class="habit-editor"></div>
+            <button type="button" id="addHabit" class="btn btn-ghost">+ Add habit</button>
+
+            <h3>Watch data</h3>
+            <div class="form-grid">
+              <label class="span-2">
+                Ingest token
+                <input name="watchToken" type="password" placeholder="unchanged" />
+                <span class="hint">POST steps/sleep/HR to <code>/api/watch</code> with <code>X-Watch-Token</code>. Leave empty to disable the token.</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">Save settings</button>
+              <button class="btn btn-ghost" type="button" id="testBtn">Send test</button>
+              <a class="btn btn-ghost" href="/api/export.csv">Export CSV</a>
+              <span id="saveNote" class="micro"></span>
+            </div>
+          </form>
+        </details>
+
+        <section class="card card-log">
+          <div class="card-head">
+            <h2>Activity</h2>
+            <button class="btn btn-ghost" id="clearLogs">Clear</button>
+          </div>
+          <div id="logs" class="logs"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

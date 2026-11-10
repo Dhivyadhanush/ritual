@@ -1,0 +1,16 @@
+{
+  "name": "Ritual — health reminders",
+  "short_name": "Ritual",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060a0c",
+  "theme_color": "#060a0c",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

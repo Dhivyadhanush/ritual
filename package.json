@@ -1,0 +1,20 @@
+{
+  "name": "ritual",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily motivation, hydration and habit reminders, pushed to ntfy (and your watch).",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "import": "node scripts/import-health.mjs",
+    "deploy": "bash scripts/install-launchd.sh",
+    "undeploy": "bash scripts/uninstall-launchd.sh",
+    "deploy:server": "bash scripts/deploy-server.sh",
+    "hash-password": "node scripts/hash-password.mjs"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}
