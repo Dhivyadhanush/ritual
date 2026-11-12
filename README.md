@@ -207,6 +207,14 @@ For custom button URLs, set `HEALTH_BASE_URL` to an address the phone can reach 
 Tailscale name, or a public HTTPS URL). The app uses `/a/water` and `/a/checkin` with
 `ACTION_TOKEN`; these paths bypass the login by design.
 
+> **After changing `HEALTH_BASE_URL`, notifications already in your shade keep the old
+> URL.** Dismiss them and send a new test. Prefer HTTPS: iOS/Android may block cleartext
+> HTTP actions.
+>
+> On iOS, ntfy does not always dismiss the notification after an `http` action (known
+> `clear:true` issue), so it can look like nothing happened. Check the dashboard — the
+> request still ran.
+
 If you expose the app on a public domain, see **[docs/DOMAIN.md](docs/DOMAIN.md)** for
 Cloudflare Tunnel + optional Cloudflare Access. When using Access, bypass only `/a/*`.
 
@@ -403,7 +411,8 @@ response, and more — with feasibility and safety notes.
 | Login always fails | Password case; use the Show toggle. The form accepts pasted `username: … / password: …` lines. |
 | Nothing on the watch | Is ntfy enabled in Zepp **App Notification**? Is the phone in DND? |
 | Test says “dry run” | Set `NTFY_DRY_RUN=false` and restart/save. |
-| Notification buttons do nothing | `HEALTH_BASE_URL` must be reachable from the phone; with Access, bypass `/a/*`. |
+| Notification buttons do nothing | `HEALTH_BASE_URL` must be reachable from the phone (use HTTPS). Old notifications keep the old URL — send a new test. |
+| iOS notification stays after Yes/No | Known ntfy `clear:true` behaviour; the HTTP request still fired. Check the dashboard. |
 | Month cells wrong | Click the cell to correct; past dates are accepted. |
 | Time is off | Set `TZ` (default `Asia/Kolkata` in Docker) or run the host in your timezone. |
 | Port in use | `lsof -tiTCP:4322 -sTCP:LISTEN`, then stop the old process. |
