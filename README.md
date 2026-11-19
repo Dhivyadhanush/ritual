@@ -94,6 +94,42 @@ npm test
 
 ---
 
+## Homebrew (macOS)
+
+Ritual runs well as a Homebrew service on a Mac that stays awake:
+
+```bash
+brew tap Dhivyadhanush/tap
+brew install ritual
+
+# Create a password hash and paste it into the config when prompted below
+ritual hash-password "change-me"
+
+# Edit AUTH_USER, AUTH_PASSWORD_HASH, NTFY_TOPIC, NTFY_URL and HEALTH_BASE_URL
+open -e "$(brew --prefix)/etc/ritual.env"
+
+brew services start ritual
+```
+
+Open <http://127.0.0.1:4322>. The service stores its data in
+`$(brew --prefix)/var/ritual` and loads configuration from
+`$(brew --prefix)/etc/ritual.env` on every start.
+
+Useful commands:
+
+```bash
+brew services restart ritual
+brew services info ritual
+tail -f "$(brew --prefix)/var/log/ritual.log"
+brew services stop ritual
+```
+
+`HEALTH_BASE_URL` must be an address your phone can reach. For notification
+buttons, use HTTPS on a public domain; `http://127.0.0.1:4322` only works while
+the phone is on the same Mac.
+
+---
+
 ## Docker
 
 ```bash

@@ -1,6 +1,7 @@
 import http from 'node:http';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { Store, dayKey } from './src/store.js';
@@ -11,6 +12,30 @@ import { motivationFor } from './src/motivation.js';
 import { readWeather } from './src/weather.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Load KEY=VALUE pairs from an env file without overriding real environment
+ * variables. Docker and launchd pass variables directly; local and Homebrew
+ * installs use RITUAL_ENV_FILE (default: ./.env).
+ */
+function loadEnvFile(file) {
+  if (!file || !existsSync(file)) return;
+  for (const raw of readFileSync(file, 'utf8').split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const match = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/.exec(line);
+    if (!match) continue;
+    const [, key] = match;
+    let value = match[2].trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = value;
+  }
+}
+
+loadEnvFile(process.env.RITUAL_ENV_FILE || path.join(__dirname, '.env'));
+
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const PORT = Number(process.env.PORT) || 4322;
 const HOST = process.env.HOST || '127.0.0.1';
